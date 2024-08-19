@@ -1,0 +1,74 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+#Attach packages
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+#Read CSV
+```{r}
+stl_lead <- read_csv(here::here("data", "stl_blood_lead.csv"))
+stl_lead
+```
+
+##Clean Names
+```{r}
+stl_lead <- clean_names(stl_lead)
+names(stl_lead)
+```
+
+##Basic Data Exploration
+```{r}
+dim(stl_lead)
+head(stl_lead)
+
+# An overview:
+skimr::skim(stl_lead)
+```
+
+#Explore Data and Clean Data
+```{r}
+stl_lead_prop <- data.frame(read_csv(here::here("data", "stl_blood_lead.csv")))
+stl_lead_prop <- clean_names(stl_lead_prop)
+names(stl_lead_prop)
+```
+
+##Manipulate Data
+```{r}
+stl_lead_prop <- dplyr::mutate(stl_lead_prop, prop_white = (white / total_pop)*100)
+names(stl_lead_prop)
+```
+
+#Visualize Data
+
+##Scatterplot graph
+```{r}
+stl_lead_plot <- ggplot(data = stl_lead_prop, aes(x = pct_elevated, y = prop_white)) + geom_jitter(aes(colour = "red", 
+                  size = 50)) +
+  labs(x = "% Elevated Lead in Blood", y = "% White Identifying") +
+  theme(legend.position="none")
+
+ggsave(here::here("figs", "taskplot.png"), height = 5, width = 6)
+
+# This was some work - needs to still be cleaned. Scatterplot showing % with elevated lead in blood levels vs % white identifying in census tract
+```
+
+##Create a Histogram
+```{r}
+stl_lead_histo_plot <- ggplot(data = stl_lead_prop, aes(x = pct_elevated))+
+  geom_histogram()+
+  theme_linedraw()+
+  labs(title = "Percent of Elevated Blood Levels Histogram",
+       x = "Elevated Percentages of Lead in Blood Levels",
+       y = "Number of instances")
+
+stl_lead_histo_plot
+ggsave(here::here("figs", "pct_elevated_histo.png"), height = 6, width = 7)
+```
+
+
